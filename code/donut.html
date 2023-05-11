@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Nested Donut Chart</title>
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+ 
+</head>
+<style>
+  body {
+    background-color: black;
+  }
+
+  #tooltip {
+    opacity: 0;
+    position: absolute;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid black;
+  }
+
+  /* CSS to center SVG container */
+  .center {
+    position: absolute;
+    top: 20%;
+    left: 40%;
+  }
+</style>
+<body>
+  <div style="text-align: center;">
+    <h1 style="color: white;">Weekly Time Table</h1>
+  </div>
+  <div id="tooltip" style="opacity: 0; position: absolute;"></div>
+  <script>
+    // Read data from CSV file
+    d3.csv("donut.csv").then(function (data) {
+
+      // Convert data to hierarchical structure
+      const nestedData = d3.nest()
+        .key(d => d.Day)
+        .key(d => d.Time)
+        .key(d => d.Course)
+        .rollup(v => v.length)
+        .entries(data);
+
+      const root = d3.hierarchy({ values: nestedData }, d => d.values)
+        .sum(d => d.value);
+
+      // Set up SVG container
+      const width = 900;
+      const height = 900;
+      const radius = Math.min(width, height) / 2;
+      const svg = d3.select("body")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("margin-left", "auto") // Center align horizontally
+        .style("margin-right", "auto") // Center align horizontally
+        .style("display", "block") // Set display to block to center align
+        .append("g")
+        .attr("transform", `translate(${width / 2}, ${height / 2})`)
+
+
+      // Create hierarchical layout
+      const partition = d3.partition()
+        .size([2 * Math.PI, radius]);
+
+      partition(root);
+      // Define color scale with an array of colors
+      const colors1 = ["#1E3F66", "#C62E65", "#307351", "#310D20", "#2F243A", "#FF9F1C"]; // Add more colors as needed
+
+      const color1 = d3.scaleOrdinal()
+        .range(colors1);
+
+      // Create arc generators for each layer
+      const arcDay = d3.arc()
+        .startAngle(d => d.x0)
+        .endAngle(d => d.x1)
+        .innerRadius(d => d.y0)
+        .outerRadius(d => d.y1 * 0.3);
+
+      const arcTime = d3.arc()
+        .startAngle(d => d.x0)
+        .endAngle(d => d.x1)
+        .innerRadius(d => d.y0 * 0.55)
+        .outerRadius(d => d.y1 * 0.67);
+
+      const arcCourse = d3.arc()
+        .startAngle(d => d.x0)
+        .endAngle(d => d.x1)
+        .innerRadius(d => d.y0 * 0.72)
+        .outerRadius(d => d.y1 * 0.9);
+
+      // Draw nested donut chart
+      const g = svg.selectAll("g")
+        .data(root.descendants())
+        .enter()
+        .append("g")
+        .on("mouseover", handleMouseover) // Add mouseover event listener
+        .on("mouseout", handleMouseout)
+
+      // Append path element only if there is data available
+
+      g.append("path")
+        .attr("class", d => {
+          if (d.depth === 1) return "slice-layer1";
+          else if (d.depth === 2) return "slice-layer2"; // Add class name for layer 2 slices
+          else if (d.depth === 3) return "slice-layer3";
+        })
+        .attr("d", d => {
+          if (d.depth === 1) return arcDay(d);
+          else if (d.depth === 2) return arcTime(d);
+          else if (d.depth === 3) return arcCourse(d);
+        })
+        .style("fill", d => {
+          if (d.depth === 0) return "none"
+          if (d.depth === 1) return color1(d.data.key);
+          else if (d.depth === 2) {
+
+            // Adjust hue, brightness of parent's color
+
+            if (d.data.key === '') return "none"; // or any other color you want for empty slice
+            const parentColor = color1(d.parent.data.key);
+            const hsl = d3.hsl(parentColor);
+            hsl.l += 0.2;
+            hsl.h += Math.random() * 20 - 10;
+
+            return d3.rgb(hsl);
+            return color1(d.parent.data.key);
+          }
+          else if (d.depth === 3) {
+            console.log(d.data.value)
+            if (d.data.key === '') return "none"; // or any other color you want for empty slicei
+            else return color1(d.parent.parent.data.key);
+          }
+          else return "none"; // if no data available, set fill to none
+        })
+        .on("mouseover", function (event, d) {
+          // Expand the slice on mouseover
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("d", d => {
+              if (d.depth === 1) return arcDayExpanded(d);
+              else if (d.depth === 2) return arcTimeExpanded(d);
+              else if (d.depth === 3) return arcCourseExpanded(d);
+            });
+        })
+        .on("mouseout", function (event, d) {
+          // Restore the slice to its original size on mouseout
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("d", d => {
+              if (d.depth === 1) return arcDay(d);
+              else if (d.depth === 2) return arcTime(d);
+              else if (d.depth === 3) return arcCourse(d);
+            });
+        })
+        .append("title") // Add title element for tooltipa
+        .text(d => `Tooltip text for slice: ${d.data.key}`); // Set tooltip text
+
+
+      // Append text labels
+      g.append("text")
+        .attr("transform", d => {
+          const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
+          const y = (d.y0 + d.y1) / 2;
+          if (d.depth === 3)
+            return `rotate(${x - 90}) translate(${y - 70},0) rotate(${x < 180 ? 0 : 180})`;
+          else if (d.depth === 2)
+            return `rotate(${x - 90}) translate(${y - 100},0) rotate(${x < 180 ? 0 : 180})`;
+          else if (d.depth === 1)
+            return `rotate(${x - 90}) translate(${y - 80},0) rotate(${90})`;
+        })
+        .attr("fill", "white")
+        .attr("dy", "0.35em")
+        .text(d => d.depth === 0 ? null : d.data.key)
+        .style("font-size", "12px")
+        .attr("text-anchor", "middle");
+    })
+
+    // Define expanded arc functions
+    const arcDayExpanded = d3.arc()
+      .startAngle(d => d.x0)
+      .endAngle(d => d.x1)
+      .innerRadius(d => d.y0)
+      .outerRadius(d => d.y1 * 0.9); // Define the expanded outer radius
+
+    const arcTimeExpanded = d3.arc()
+      .startAngle(d => d.x0)
+      .endAngle(d => d.x1)
+      .innerRadius(d => d.y0 * 0.6)
+      .outerRadius(d => d.y1 * 0.9); // Define the expanded outer radius
+
+    const arcCourseExpanded = d3.arc()
+      .startAngle(d => d.x0)
+      .endAngle(d => d.x1)
+      .innerRadius(d => d.y0 * 0.8)
+      .outerRadius(d => d.y1 * 0.98); // Define the expanded outer radius
+
+    function handleMouseover(d) {
+      if (d.depth === 3) { // Only show tooltip for layer 3 slices
+        const tooltip = d3.select("#tooltip")
+          .style("opacity", 1)
+          .html(`Course ${d.data.key} <br> Time Slot: ${d.parent.data.key} <br> Day: ${d.parent.parent.data.key} <br>`) // Set tooltip text
+          .style("left", (d3.event.pageX + 10) + "px") // Position tooltip near mouse cursor
+          .style("top", (d3.event.pageY - 20) + "px");
+      }
+    }
+    function handleMouseout(d) {
+      if (d.depth === 3) { // Only show tooltip for layer 3 slices
+        const tooltip = d3.select("#tooltip")
+          .style("opacity", 0)
+      }
+    }
+  </script>
+</body>
+
+</html>

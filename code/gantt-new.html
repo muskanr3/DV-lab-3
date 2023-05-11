@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>D3-Gantt</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+        }
+
+        #chart {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .qtip-content {
+            background-color: #fff;
+            color: #000;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 14px;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/3.0.3/jquery.qtip.min.css" rel="stylesheet" />
+    <script>
+        $.fn.qtip.defaults.style.classes.tooltip = 'tooltip';
+    </script>
+</head>
+
+<body>
+    <center>
+        <h1>Select the User</h1>
+    </center>
+
+    <div class="user-selector">
+        <button id="User1" onclick="update(this.id)">User1</button>
+        <button id="User2" onclick="update(this.id)">User2</button>
+        <button id="User3" onclick="update(this.id)">User3</button>
+        <button id="User4" onclick="update(this.id)">User4</button>
+        <button id="User5" onclick="update(this.id)">User5</button>
+        <button id="User6" onclick="update(this.id)">User6</button>
+    </div>
+
+    <style>
+        .user-selector {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-selector button {
+            display: inline-block;
+            padding: 10px;
+            margin: 5px;
+            background-color: #e1e1e1;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #000;
+            border: none;
+        }
+
+        .user-selector button:focus {
+            background-color: #384441;
+            color: #f5f1f1;
+        }
+    </style>
+
+
+    <div id="chart"></div>
+    <script>
+
+        var user = "User1";
+        function update(selectedUser) {
+            user = selectedUser;
+            generateChart();
+        }
+
+        function generateChart() {
+
+            d3.csv("meetings.csv").then(function (data) {
+
+                console.log(data)
+                const margin = { top: 300, right: 50, bottom: 50, left: 150 };
+                const width = 1300 - margin.left - margin.right;
+                const height = 700 - margin.top - margin.bottom;
+                const barRadius = 5;
+                const gapBetweenBars = 2;
+
+                const x = d3.scaleTime()
+                    .range([0, width])
+                    .domain([new Date(2023, 1, 1, 9, 0), new Date(2023, 1, 1, 20, 0)])
+
+                const MeetingTypes = ["Marketing Presentation", "Client Meeting", "Team Meeting", "Board Meeting"];
+                const y = d3.scaleBand()
+                    .range([0, height])
+                    .domain(MeetingTypes)
+                    .padding(0.1);
+
+                const svg = d3.select("#chart")
+                    .html("")
+                    .append("svg")
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+
+                var userData = data.filter(function (d) {
+                    return d.User === user;
+                });
+
+                userData.forEach(function (d) {
+                    d.Start_Time = new Date(2023, 1, 1, +d.Start_Time.split(":")[0], 0);
+                    d.End_Time = new Date(d.Start_Time.getTime() + (+d.Duration.split(" ")[0] * 60 * 60 * 1000));
+                });
+
+                var colorScale = d3.scaleOrdinal()
+                    .domain(data.map(function (d) { return d['Meeting Type']; }))
+                    .range(['#D7FFF1', '#AAFCB8', '#285943', '#77AF9C']);
+
+                svg.selectAll(".bar")
+                    .data(userData)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .attr("rx", barRadius)
+                    .attr("ry", barRadius)
+                    .attr("x", function (d, i) {
+                        return x(d.Start_Time);
+                    })
+                    .attr("y", function (d) {
+                        return y(d["Meeting Type"]) + y.bandwidth() / 4; 
+                    })
+                    .attr("width", function (d) { return x(d.End_Time) - x(d.Start_Time) - gapBetweenBars; })
+                    .attr("height", y.bandwidth() / 2)
+                    .style("fill", function (d) { return colorScale(d['Meeting Type']); })
+                    .on("mouseover", function (event, d) {
+                        d3.select(this)
+                            .transition()
+                            .style("fill", "green")
+                            .attr("transform", "scale(1.05)");
+                    })
+                    .on("mouseout", function (event, d) {
+                        d3.select(this)
+                            .transition()
+                            .style("fill", function (d) { return colorScale(d['Meeting Type']); })
+                            .attr("transform", "scale(1)");
+                    })
+                    .each(function (d) {
+                        $(this).qtip({
+                            content: `Attendees - ${d.Attendees}<br/>
+                              Duration - ${d.Duration}<br/>
+                              Description - ${d.Description}`,
+                            show: {
+                                event: 'mousemove'
+                            },
+                            hide: {
+                                event: 'mouseout'
+                            },
+                            style: {
+                                classes: 'qtip-dark',
+                                background: '#fff' 
+                            },
+                            position: {
+                                my: 'bottom left',
+                                at: 'top left',
+                                target: $(this)
+                            }
+                        });
+                    });
+
+
+
+                var legend = svg.append("g")
+                    .attr("class", "legend")
+                    .attr("transform", "translate(0, -30)");
+
+                var legendRect = legend.selectAll(".legendRect")
+                    .data(MeetingTypes)
+                    .enter().append("rect")
+                    .attr("class", "legendRect")
+                    .attr("x", function (d, i) { return i * 200 + 150; })
+                    .attr("y", -20)
+                    .attr("width", 20)
+                    .attr("height", 20)
+                    .style("fill", function (d) { return colorScale(d); });
+
+                var legendText = legend.selectAll(".legendText")
+                    .data(MeetingTypes)
+                    .enter().append("text")
+                    .attr("class", "legendText")
+                    .attr("x", function (d, i) { return i * 200 + 25 + 150; })
+                    .attr("y", -5)
+                    .text(function (d) { return d; })
+                    .style("fill", "#fff");
+
+                const xAxis = d3.axisBottom(x)
+                    .ticks(d3.timeHour.every(1))
+                    .tickSize(-height)
+                    .tickFormat(d3.timeFormat("%I %p"));
+                svg.append("g")
+                    .attr("class", "x-axis")
+                    .attr("transform", `translate(0, ${height})`)
+                    .call(xAxis);
+
+                const yAxis = d3.axisLeft(y);
+                svg.append("g")
+                    .attr("class", "y-axis")
+                    .call(yAxis);
+
+                svg.append("text")
+                    .attr("x", width / 2 - 50)
+                    .attr("y", 0 - margin.top / 2 - 20)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "30px")
+                    .style("fill", "white")
+                    .style("font-weight", "bold")
+                    .text(`Meeting Schedule for ${user}`);
+
+              
+                svg.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", height + margin.bottom)
+                    .attr("text-anchor", "middle")
+                    .style("font-size", "20px")
+                    .style("fill", "white")
+                    .text("Time");
+
+                svg.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", -margin.left + 20)
+                    .attr("x", 0 - (height / 2) - 40)
+                    .attr("fill", "white")
+                    .style("font-size", "20px")
+                    .text("Meeting Type")
+            });
+        }
+
+        generateChart();
+
+
+    </script>
+</body>

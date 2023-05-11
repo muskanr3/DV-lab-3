@@ -1,0 +1,284 @@
+<html>
+
+<head>
+    <title>Calendar</title>
+    <style>
+        .month {
+            fill: none;
+            stroke: #7a4c71;
+            stroke-width: 1px;
+        }
+
+        .day {
+            fill: #fff;
+            stroke: #ccc;
+        }
+
+        text {
+            font-family: sans-serif;
+            font-size: 1.5em;
+        }
+
+        .dayLabel {
+            fill: #aaa;
+            font-size: 0.8em;
+        }
+
+        .monthLabel {
+            text-anchor: middle;
+            font-size: 0.8em;
+            fill: #aaa;
+        }
+
+        .key {
+            font-size: 0.4em;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script>
+        var colours = ["#feaf8a	", "#fbd206", "#fd7a8c", "#cc89d6", "#bfcff0", "#9ce7c9", "#4dc656", "#a6aab2", "#a6eaff", "#f5faf9"];
+        var events = ["Class Day", "Holiday", "Evaluation", "Research Evaluation", "R&D Showcase",
+            "Felicity", "Paper Checking", "Research Events", "Sunday", "No event"]
+        var cellDim = 50;
+        var xMar = 110;
+        var yMar = 80;
+        var yinit = 50;
+        var xinit = 30; // position of first week
+        var width = 1300;
+        var height = 163;
+        var parseDate = d3.time.format("%d/%m/%y").parse;
+        format = d3.time.format("%d-%m-%Y");
+        toolDate = d3.time.format("%d/%b/%y");
+
+        d3.csv("almanac.csv", function (error, data) {
+
+            //set up an array of all the dates in the data which we need to work out the range of the data
+            var dateArr = []
+            var valuesArr = []
+            console.log(data)
+
+            // convert all the dates to date format
+            for (i = 0; i < data.length; i++) {
+                data[i].date = parseDate(data[i].date)
+                data[i].year = data[i].date.getFullYear()
+                dateArr.push(data[i].date)
+                valuesArr.push(data[i].value)
+            }
+
+            // group the data by year
+            var yearData = d3.nest()
+                .key(function (d) { return d.year })
+                .entries(data)
+            // console.log(yearData)
+
+            var svg = d3.select("body").append("svg")
+                .attr("width", "100%")
+                .attr("viewBox", "0 0 " + (xMar + width) + " 500") // helps define the viewing dimensions of the svg
+
+            //title
+            svg.append("text")
+                .attr("x", 620)
+                .attr("y", 20)
+                .text("ALMANAC 2023");
+
+            //create an SVG group for each year
+            var calendar = svg.selectAll("g")
+                .data(yearData)
+                .enter()
+                .append("g")
+                .attr("transform", function (d, i) {
+                    return "translate(0," + (yMar + (i * (height + yinit))) + ")";
+                })  //positioning the groups below each other
+
+            // adding year at the top of the calendar
+            var year = calendar.append("text")
+                .attr("x", 650)
+                .attr("y", 15)
+                .text(2023);
+
+            var days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            var dayNames = calendar.append("g")
+            for (i = 0; i < days.length; i++) {
+                dayNames.append("text")
+                    .attr("class", "dayLabel")
+                    .attr("x", xMar)
+                    .attr("y", function (d) { return yinit + (i * cellDim) })
+                    .attr("dy", "1.4em")
+                    .text(days[i])
+            }
+
+            //making the cells
+            var dataRects = calendar.append("g")
+                .selectAll(".dataday")
+                .data(function (d) {
+                    return d.values;
+                })
+                .enter()
+                .append("rect")
+                .attr("stroke", "#ccc")
+                .attr("width", cellDim)
+                .attr("height", cellDim)
+                .attr("x", function (d) { return xMar + xinit + (d3.time.weekOfYear(d.date) * cellDim); })
+                .attr("y", function (d) { return yinit + (d.date.getDay() * cellDim); })
+                .attr("fill", function (d) {
+                    d.originalFill = "#fff";
+                    if (d.value === events[0]) {
+                        d.originalFill = colours[0];
+                        return colours[0];
+                    }
+                    else if (d.value === events[1]) {
+                        d.originalFill = colours[1];
+                        return colours[1];
+                    }
+                    else if (d.value === events[2]) {
+                        d.originalFill = colours[2];
+                        return colours[2];
+                    }
+                    else if (d.value === events[3]) {
+                        d.originalFill = colours[3];
+                        return colours[3];
+                    }
+                    else if (d.value === events[4]) {
+                        d.originalFill = colours[4];
+                        return colours[4];
+                    }
+                    else if (d.value === events[5]) {
+                        d.originalFill = colours[5];
+                        return colours[5];
+                    }
+                    else if (d.value === events[6]) {
+                        d.originalFill = colours[6];
+                        return colours[6];
+                    }
+                    else if (d.value === events[7]) {
+                        d.originalFill = colours[7];
+                        return colours[7];
+                    }
+                    else if (d.value === events[8]) {
+                        d.originalFill = colours[8];
+                        return colours[8];
+                    }
+                    else if (d.value === events[9]) {
+                        d.originalFill = colours[9];
+                        return colours[9];
+                    }
+                })
+                .on("mouseover", function (event, d) {
+                    d3.select(this).style("fill", "blue");
+
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("width", cellDim + 5)
+                        .attr("height", cellDim + 5)
+                        .attr("x", function (d) { return xMar + xinit + (d3.time.weekOfYear(d.date) * cellDim) - 2.5; })
+                        .attr("y", function (d) { return yinit + (d.date.getDay() * cellDim) - 2.5; });
+                })
+
+                .on("mouseout", function (d) {
+                    d3.select(this).style("fill", d.originalFill);
+                    d3.select(this)
+                        .transition()
+                        .duration(200)
+                        .attr("width", cellDim)
+                        .attr("height", cellDim)
+                        .attr("x", function (d) { return xMar + xinit + (d3.time.weekOfYear(d.date) * cellDim); })
+                        .attr("y", function (d) { return yinit + (d.date.getDay() * cellDim); });
+                })
+                .append("title")
+                .text(function (d) { return toolDate(d.date) + ":\n" + d.value + "\n" + d.event; });
+
+            dataRects.attr("fill", function (d) {
+                return d.originalFill;
+            });
+
+            //add month outlines 
+            calendar.append("g")
+                .attr("id", "monthName")
+                .selectAll(".month")
+                .data(function (d) {
+                    return d3.time.months(new Date(parseInt(d.key), 0, 1),
+                        new Date(parseInt(d.key), 4, 31));
+                })
+                .enter().append("path")
+                .attr("class", "month")
+                .attr("transform", "translate(" + (xMar + xinit) + "," + yinit + ")")
+                .attr("d", monthPath);
+
+            var key = svg.append("g")
+                .attr("id", "key")
+                .attr("class", "key")
+                .attr("transform", function (d) {
+                    return "translate(" + xMar + "," + (yMar - (cellDim * 1.5)) + ")";
+                });
+
+            key.selectAll("rect")
+                .data(colours)
+                .enter()
+                .append("rect")
+                .attr("width", 20)
+                .attr("height", 20)
+                .attr("x", function (d, i) {
+                    return i * 130;
+                })
+                .attr("y", 40)
+                .attr("fill", function (d) {
+                    return d;
+                });
+            //colors
+            key.selectAll("text")
+                .data(colours)
+                .enter()
+                .append("text")
+                .attr("x", function (d, i) {
+                    return 20 + 5 + (i * 130);
+                })
+                .attr("y", 54)
+                // .attr("y", "1em")
+                .text(function (d, i) {
+                    return events[i++]
+                });
+
+            //retreive the bounding boxes of the outlines
+            var BB = new Array();
+            var mp = document.getElementById("monthName").childNodes;
+            for (var i = 0; i < mp.length; i++) {
+                BB.push(mp[i].getBBox());
+            }
+
+            var monthX = new Array();
+            BB.forEach(function (d, i) {
+                boxCentre = d.width / 2;
+                monthX.push(xMar + xinit + d.x + boxCentre);
+            })
+
+            //create centred month labels around the bounding box of each month path
+            var months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY'];
+            var monthLabels = calendar.append("g").attr("id", "monthLabels")
+            months.forEach(function (d, i) {
+                monthLabels.append("text")
+                    .attr("class", "monthLabel")
+                    .attr("x", monthX[i])
+                    .attr("y", yinit / 1.2)
+                    .text(d);
+            })
+
+        });
+
+        function monthPath(t0) {
+            var t1 = new Date(t0.getFullYear(), t0.getMonth() + 1, 0),
+                d0 = t0.getDay(), w0 = d3.time.weekOfYear(t0),
+                d1 = t1.getDay(), w1 = d3.time.weekOfYear(t1);
+            return "M" + (w0 + 1) * cellDim + "," + d0 * cellDim
+                + "H" + w0 * cellDim + "V" + 7 * cellDim
+                + "H" + w1 * cellDim + "V" + (d1 + 1) * cellDim
+                + "H" + (w1 + 1) * cellDim + "V" + 0
+                + "H" + (w0 + 1) * cellDim + "Z";
+        }
+    </script>
+</body>
+
+</html>

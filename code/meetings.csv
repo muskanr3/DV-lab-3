@@ -1,0 +1,60 @@
+User,Meeting Type,Start_Time,Duration,Attendees,Description
+User1,Marketing Presentation,10:00,2 hours,"Sarah, Bob, Mary, Mike",Develop action plan for next quarter
+User1,Client Meeting,12:00,1 hour,"Rachel, Bob, Mary, John, Mike, Jim, Allison, Steve, Sarah",Review financial statements
+User1,Marketing Presentation,13:00,1 hour,"Dave, John, Mike, Steve",Discuss company policies and procedures
+User1,Marketing Presentation,09:00,1 hour,"Mike, John, Allison, Steve",Evaluate project risks and opportunities
+User1,Marketing Presentation,16:00,2 hours,"Sarah, Bob, Steve, Mike, Rachel, Allison",Present new marketing strategy to team
+User1,Board Meeting,10:00,3 hours,"Allison, Steve, John, Sarah, Bob, Dave",Review financial statements
+User1,Marketing Presentation,19:00,1 hour,"Mary, John, Mike, Rachel, Sarah, Bob, Jim, Dave, Steve, Allison",Discuss company policies and procedures
+User1,Client Meeting,14:00,3 hours,"Mary, Mike, Jim, Allison, Sarah, John",Brainstorm new product ideas
+User1,Board Meeting,14:00,0.5 hours,"John, Mary, Rachel, Dave, Allison, Mike, Steve, Bob, Jim",Discuss client needs and propose solutions
+User1,Client Meeting,18:00,2 hours,"Jim, Rachel, Sarah",Discuss company policies and procedures
+User1,Team Meeting,15:00,2.5 hours,"Bob, Rachel, John, Dave, Steve, Sarah, Mike, Jim",Discuss company policies and procedures
+User2,Marketing Presentation,09:30,2 hours,"Sarah, Bob, Mary, Mike",Develop action plan for next quarter
+User2,Marketing Presentation,13:00,1 hour,"Dave, John, Mike, Steve",Discuss company policies and procedures
+User2,Board Meeting,10:00,3 hours,"Allison, Steve, John, Sarah, Bob, Dave",Review financial statements
+User2,Client Meeting,14:00,1 hour,"Mary, Mike, Jim, Allison, Sarah, John",Brainstorm new product ideas
+User2,Board Meeting,14:00,0.5 hours,"John, Mary, Rachel, Dave, Allison, Mike, Steve, Bob, Jim",Discuss client needs and propose solutions
+User2,Client Meeting,15:00,2 hours,"Jim, Rachel, Sarah",Discuss company policies and procedures
+User2,Team Meeting,15:00,2.5 hours,"Bob, Rachel, John, Dave, Steve, Sarah, Mike, Jim",Discuss company policies and procedures
+User3,Marketing Presentation,10:00,2 hours,"Sarah, Bob, Mary, Mike",Develop action plan for next quarter
+User3,Client Meeting,12:00,1 hour,"Rachel, Bob, Mary, John, Mike, Jim, Allison, Steve, Sarah",Review financial statements
+User3,Marketing Presentation,13:00,1 hour,"Dave, John, Mike, Steve",Discuss company policies and procedures
+User3,Marketing Presentation,16:00,2 hours,"Sarah, Bob, Steve, Mike, Rachel, Allison",Present new marketing strategy to team
+User3,Marketing Presentation,19:00,1 hour,"Mary, John, Mike, Rachel, Sarah, Bob, Jim, Dave, Steve, Allison",Discuss company policies and procedures
+User3,Board Meeting,09:00,0.5 hours,"John, Mary, Rachel, Dave, Allison, Mike, Steve, Bob, Jim",Discuss client needs and propose solutions
+User3,Client Meeting,18:00,2 hours,"Jim, Rachel, Sarah",Discuss company policies and procedures
+User3,Team Meeting,11:00,2.5 hours,"Bob, Rachel, John, Dave, Steve, Sarah, Mike, Jim",Discuss company policies and procedures
+User4,Marketing Presentation,10:00,2 hours,"Sarah, Bob, Mary, Mike",Develop action plan for next quarter
+User4,Client Meeting,12:00,1 hour,"Rachel, Bob, Mary, John, Mike, Jim, Allison, Steve, Sarah",Review financial statements
+User4,Marketing Presentation,12:00,1 hour,"Dave, John, Mike, Steve",Discuss company policies and procedures
+User4,Marketing Presentation,10:00,1 hour,"Mike, John, Allison, Steve",Evaluate project risks and opportunities
+User4,Board Meeting,10:00,3 hours,"Allison, Steve, John, Sarah, Bob, Dave",Review financial statements
+User4,Marketing Presentation,19:00,1 hour,"Mary, John, Mike, Rachel, Sarah, Bob, Jim, Dave, Steve, Allison",Discuss company policies and procedures
+User4,Client Meeting,14:00,3 hours,"Mary, Mike, Jim, Allison, Sarah, John",Brainstorm new product ideas
+User4,Board Meeting,14:00,0.5 hours,"John, Mary, Rachel, Dave, Allison, Mike, Steve, Bob, Jim",Discuss client needs and propose solutions
+User4,Client Meeting,18:00,2 hours,"Jim, Rachel, Sarah",Discuss company policies and procedures
+User4,Team Meeting,15:00,3 hours,"Bob, Rachel, John, Dave, Steve, Sarah, Mike, Jim",Discuss company policies and procedures
+User5,Marketing Presentation,10:00,2 hours,"Sarah, Bob, Mary, Mike",Develop action plan for next quarter
+User5,Client Meeting,12:00,1 hour,"Rachel, Bob, Mary, John, Mike, Jim, Allison, Steve, Sarah",Review financial statements
+User5,Marketing Presentation,13:00,1 hour,"Dave, John, Mike, Steve",Discuss company policies and procedures
+User5,Marketing Presentation,09:00,1 hour,"Mike, John, Allison, Steve",Evaluate project risks and opportunities
+User5,Marketing Presentation,16:00,2 hours,"Sarah, Bob, Steve, Mike, Rachel, Allison",Present new marketing strategy to team
+User5,Board Meeting,10:00,3 hours,"Allison, Steve, John, Sarah, Bob, Dave",Review financial statements
+User5,Marketing Presentation,19:00,1 hour,"Mary, John, Mike, Rachel, Sarah, Bob, Jim, Dave, Steve, Allison",Discuss company policies and procedures
+User5,Client Meeting,14:00,3 hours,"Mary, Mike, Jim, Allison, Sarah, John",Brainstorm new product ideas
+User5,Board Meeting,14:00,0.5 hours,"John, Mary, Rachel, Dave, Allison, Mike, Steve, Bob, Jim",Discuss client needs and propose solutions
+User5,Client Meeting,18:00,2 hours,"Jim, Rachel, Sarah",Discuss company policies and procedures
+User5,Team Meeting,15:00,2.5 hours,"Bob, Rachel, John, Dave, Steve, Sarah, Mike, Jim",Discuss company policies and procedures
+User6,Marketing Presentation,10:00,2 hours,"Sarah, Bob, Mary, Mike",Develop action plan for next quarter
+User6,Client Meeting,12:00,1 hour,"Rachel, Bob, Mary, John, Mike, Jim, Allison, Steve, Sarah",Review financial statements
+User6,Marketing Presentation,13:00,1 hour,"Dave, John, Mike, Steve",Discuss company policies and procedures
+User6,Marketing Presentation,09:00,1 hour,"Mike, John, Allison, Steve",Evaluate project risks and opportunities
+User6,Marketing Presentation,16:00,2 hours,"Sarah, Bob, Steve, Mike, Rachel, Allison",Present new marketing strategy to team
+User6,Board Meeting,10:00,3 hours,"Allison, Steve, John, Sarah, Bob, Dave",Review financial statements
+User6,Marketing Presentation,19:00,1 hour,"Mary, John, Mike, Rachel, Sarah, Bob, Jim, Dave, Steve, Allison",Discuss company policies and procedures
+User6,Client Meeting,14:00,3 hours,"Mary, Mike, Jim, Allison, Sarah, John",Brainstorm new product ideas
+User6,Board Meeting,14:00,0.5 hours,"John, Mary, Rachel, Dave, Allison, Mike, Steve, Bob, Jim",Discuss client needs and propose solutions
+User6,Client Meeting,18:00,2 hours,"Jim, Rachel, Sarah",Discuss company policies and procedures
+User6,Team Meeting,15:00,2.5 hours,"Bob, Rachel, John, Dave, Steve, Sarah, Mike, Jim",Discuss company policies and procedures
+
